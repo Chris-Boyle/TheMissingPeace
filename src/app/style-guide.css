@@ -1,0 +1,48 @@
+/*
+  Style guide and reusable design tokens for The Missing Peace.
+
+  Color palette:
+  - Soft Blush Pink: #e8cfc8
+  - Ivory: #fcf8f3
+  - Sage Green: #a8b39e
+  - Terracotta: #b86f52
+
+  Font system:
+  - Headings: Cormorant Garamond, Georgia, serif
+  - Body: Acumin Pro, Acumin Variable Concept, Avenir Next, sans-serif
+*/
+
+:root {
+  --color-soft-blush-pink: #e8cfc8;
+  --color-ivory: #fcf8f3;
+  --color-sage-green: #a8b39e;
+  --color-terracotta: #b86f52;
+
+  --color-text-primary: #35271f;
+  --color-text-secondary: #5d4a3e;
+  --color-border-soft: #dccfc1;
+  --color-surface-primary: var(--color-ivory);
+  --color-surface-muted: #f6eee6;
+
+  --font-family-heading: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --font-family-body: "Acumin Pro", "Acumin Variable Concept", "Avenir Next", "Segoe UI", sans-serif;
+  --font-family-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+
+  --font-size-display: clamp(3rem, 5vw, 4.5rem);
+  --font-size-h1: clamp(2.5rem, 4vw, 3.75rem);
+  --font-size-h2: clamp(2rem, 3vw, 3rem);
+  --font-size-h3: 1.875rem;
+  --font-size-h4: 1.5rem;
+  --font-size-body-lg: 1.125rem;
+  --font-size-body: 1rem;
+  --font-size-body-sm: 0.9375rem;
+  --font-size-caption: 0.8125rem;
+
+  --line-height-tight: 1.1;
+  --line-height-heading: 1.2;
+  --line-height-body: 1.7;
+
+  --letter-spacing-display: 0.01em;
+  --letter-spacing-heading: 0.02em;
+  --letter-spacing-caps: 0.2em;
+}

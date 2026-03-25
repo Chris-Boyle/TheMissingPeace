@@ -1,0 +1,32 @@
+<svg width="1200" height="600" viewBox="0 0 1200 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>The Missing Peace Birth Doula logo</title>
+  <rect width="1200" height="600" fill="transparent"/>
+  <g stroke="#D8A64B" stroke-linecap="round" stroke-width="8">
+    <path d="M860 80L852 255"/>
+    <path d="M900 95L872 258"/>
+    <path d="M940 110L892 260"/>
+    <path d="M980 135L913 268"/>
+    <path d="M1018 165L934 281"/>
+    <path d="M1050 198L957 300"/>
+    <path d="M1074 238L978 322"/>
+    <path d="M1090 280L995 348"/>
+    <path d="M1098 322L1006 374"/>
+    <path d="M1098 365L1012 398"/>
+    <path d="M1088 408L1012 422"/>
+    <path d="M1072 448L1006 444"/>
+    <path d="M1048 485L994 464"/>
+    <path d="M1018 517L978 482"/>
+    <path d="M982 543L956 496"/>
+    <path d="M942 562L934 507"/>
+    <path d="M900 573L912 512"/>
+    <path d="M858 578L890 512"/>
+  </g>
+  <g fill="#B85E1C">
+    <text x="92" y="348" font-family="'Avenir Next Condensed','Trebuchet MS',sans-serif" font-size="112" font-style="italic" letter-spacing="1">
+      THE MISSING PEACE
+    </text>
+    <text x="274" y="503" font-family="'Brush Script MT','Segoe Script',cursive" font-size="128">
+      Birth Doula
+    </text>
+  </g>
+</svg>

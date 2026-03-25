@@ -1,0 +1,43 @@
+@import "tailwindcss";
+@import "./style-guide.css";
+
+:root {
+  --background: var(--color-surface-primary);
+  --foreground: var(--color-text-primary);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-soft-blush-pink: var(--color-soft-blush-pink);
+  --color-ivory: var(--color-ivory);
+  --color-sage-green: var(--color-sage-green);
+  --color-terracotta: var(--color-terracotta);
+  --font-sans: var(--font-family-body);
+  --font-serif: var(--font-family-heading);
+  --font-mono: var(--font-family-mono);
+}
+
+html {
+  min-height: 100%;
+}
+
+body {
+  min-height: 100%;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-family-heading);
+  line-height: var(--line-height-heading);
+  letter-spacing: var(--letter-spacing-heading);
+}
