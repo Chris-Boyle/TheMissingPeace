@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+echo "Running TypeScript check before push..."
+npm run typecheck

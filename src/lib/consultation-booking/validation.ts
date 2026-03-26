@@ -25,7 +25,7 @@ export function validateAvailabilityDate(date: string, timeZone: string, now = n
 
   const weekday = getWeekdayForDate(date);
 
-  if (!CONSULTATION_CONFIG.workingDays.includes(weekday)) {
+  if (!CONSULTATION_CONFIG.workingDays.some((workingDay) => workingDay === weekday)) {
     throw new ConsultationBookingError(
       "Consultations are available Monday through Friday.",
       {
