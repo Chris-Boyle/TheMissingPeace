@@ -97,11 +97,14 @@ function BirthPlanBuilderContent() {
             <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#8c6a52]">
               Why families use it
             </p>
-            <ul className="mt-5 space-y-4" aria-label="Birth plan builder benefits">
+            <ul
+              className="mt-5 divide-y divide-[#eadbcf] border-y border-[#eadbcf]"
+              aria-label="Birth plan builder benefits"
+            >
               {benefits.map((benefit) => (
                 <li
                   key={benefit}
-                  className="rounded-[1.5rem] border border-[#eee1d4] bg-[#fffdfa] px-5 py-4 text-base leading-7 text-[#57453a] shadow-[0_14px_35px_rgba(109,75,54,0.06)]"
+                  className="py-4 text-base leading-7 text-[#57453a]"
                 >
                   {benefit}
                 </li>

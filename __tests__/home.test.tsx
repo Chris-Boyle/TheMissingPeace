@@ -22,7 +22,7 @@ describe('Home page', () => {
 
     expect(
       screen.getByRole('heading', {
-        name: /take a quick quiz to see what kind of support would help most/i,
+        name: /start with your pregnancy timeline and get your bearings/i,
       })
     ).toBeVisible();
 
@@ -36,10 +36,10 @@ describe('Home page', () => {
       screen.getAllByRole('link', { name: /build your birth plan/i }).length
     ).toBeGreaterThan(0);
     expect(
-      screen.getByRole('link', { name: /take the quiz/i })
+      screen.getByRole('link', { name: /view your pregnancy timeline/i })
     ).toBeVisible();
     expect(
-      screen.getByRole('link', { name: /view pregnancy timeline/i })
+      screen.getByRole('link', { name: /take the quiz/i })
     ).toBeVisible();
   });
 });

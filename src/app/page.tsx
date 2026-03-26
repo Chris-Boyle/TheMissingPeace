@@ -14,10 +14,9 @@ const trustPoints = [
   "Tools and planning support that help families feel prepared without pressure",
 ];
 
-const quizHighlights = [
-  "A calm first step when you want clarity without pressure.",
-  "A simple way to understand whether planning or conversation would help most.",
-  "A gentle bridge toward booking, your birth plan, or both.",
+const timelineHighlights = [
+  "See where you are now in pregnancy and what may feel helpful next.",
+  "Use the full timeline page when you want a calmer, more grounded sense of timing.",
 ];
 
 export default function Home() {
@@ -141,17 +140,17 @@ export default function Home() {
               Not sure where to start?
             </p>
             <h2 className="mt-4 text-3xl text-[#684835] [font-family:Georgia,'Times_New_Roman',serif] sm:text-4xl">
-              Take a quick quiz to see what kind of support would help most.
+              Start with your pregnancy timeline and get your bearings.
             </h2>
             <p className="mt-4 text-lg leading-8 text-[#57453a]">
-              If you are still deciding what kind of guidance would feel most
-              helpful, this short check-in offers a calm next step without
-              adding pressure.
+              If you want a gentle place to begin, the pregnancy timeline gives
+              you a clearer sense of what stage you are in and what to prepare
+              for next.
             </p>
           </div>
           <div className="max-w-3xl">
             <ul className="mt-1 divide-y divide-[#e2d5c7] border-y border-[#e2d5c7]">
-              {quizHighlights.map((point) => (
+              {timelineHighlights.map((point) => (
                 <li
                   key={point}
                   className="py-4 text-base leading-7 text-[#5d4a3e]"
@@ -162,16 +161,25 @@ export default function Home() {
             </ul>
             <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
               <Link
-                href="/quiz"
+                href="/pregnancy-timeline"
                 className="inline-flex items-center justify-center rounded-full bg-[#7d5c3c] px-6 py-3 text-base font-semibold text-[#fffaf5] transition hover:bg-[#694a30]"
               >
-                Take the Quiz
+                View Your Pregnancy Timeline
               </Link>
+            </div>
+            <div className="mt-8 border-t border-[#dccdbd] pt-6">
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#8c6a52]">
+                Not sure if a doula is right for you?
+              </p>
+              <p className="mt-3 max-w-2xl text-base leading-7 text-[#5d4a3e]">
+                Take a quick quiz to see what kind of support would feel most
+                helpful for your birth.
+              </p>
               <Link
-                href="/pregnancy-timeline"
-                className="text-sm font-medium text-[#7b624f] underline decoration-[#ccb39b] underline-offset-4 transition hover:text-[#5c4130]"
+                href="/quiz"
+                className="mt-4 inline-flex items-center justify-center rounded-full border border-[#d7c3b0] bg-transparent px-5 py-2.5 text-sm font-semibold text-[#6a4a36] transition hover:bg-[#f7ecdf]"
               >
-                View Pregnancy Timeline
+                Take the Quiz
               </Link>
             </div>
           </div>

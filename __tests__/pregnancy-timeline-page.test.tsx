@@ -7,14 +7,23 @@ describe("Pregnancy timeline page", () => {
 
     expect(
       screen.getByRole("heading", {
-        name: /see what is coming next in pregnancy with a calmer sense of timing/i,
+        name: /your pregnancy timeline/i,
+        level: 1,
       })
     ).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /build my timeline/i })
     ).toBeInTheDocument();
     expect(
+      screen.getByRole("heading", {
+        name: /what each stage of pregnancy often asks of you/i,
+      })
+    ).toBeInTheDocument();
+    expect(
       screen.getByRole("link", { name: /build your birth plan/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /book a consultation/i })
     ).toBeInTheDocument();
   });
 });
