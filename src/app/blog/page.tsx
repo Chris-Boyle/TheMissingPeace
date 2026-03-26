@@ -5,6 +5,13 @@ type BlogPost = {
   excerpt: string;
 };
 
+type CommunityEvent = {
+  id: string;
+  title: string;
+  date: string;
+  description: string;
+};
+
 const posts: BlogPost[] = [
   {
     id: '1',
@@ -26,11 +33,47 @@ const posts: BlogPost[] = [
   }
 ];
 
+const communityEvents: CommunityEvent[] = [
+  {
+    id: "comfort-measures-workshop",
+    title: "Comfort Measures Workshop",
+    date: "2026-04-12",
+    description:
+      "An evening session on breathing, positioning, and partner support tools for labor.",
+  },
+  {
+    id: "birth-planning-circle",
+    title: "Birth Planning Circle",
+    date: "2026-04-26",
+    description:
+      "A small-group conversation focused on preferences, advocacy, and creating a peaceful plan.",
+  },
+  {
+    id: "postpartum-preparation-chat",
+    title: "Postpartum Preparation Chat",
+    date: "2026-05-10",
+    description:
+      "Guidance on recovery rhythms, feeding support, and building a gentle support system at home.",
+  },
+];
+
 export default function BlogPage() {
   return (
-    <section className="w-full flex justify-center py-16 px-4 bg-white">
-      <div className="max-w-3xl w-full">
-        <h1 className="text-3xl font-semibold mb-10 text-[#7d5c3c] tracking-tight text-center">Blog</h1>
+    <section className="flex w-full justify-center bg-white px-4 py-16">
+      <div className="w-full max-w-5xl space-y-14">
+        <div className="max-w-3xl">
+          <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#8c6a52]">
+            Resources and Community
+          </p>
+          <h1 className="mt-4 text-4xl font-semibold tracking-tight text-[#7d5c3c]">
+            Blog
+          </h1>
+          <p className="mt-4 text-lg leading-8 text-[#57453a]">
+            Practical reading and community updates for families preparing for
+            birth and postpartum.
+          </p>
+        </div>
+
         <ul className="space-y-8">
           {posts.map(post => (
             <li key={post.id} className="p-6 rounded-xl bg-[#f7f3ef] shadow-sm hover:shadow-md transition-shadow">
@@ -42,6 +85,38 @@ export default function BlogPage() {
             </li>
           ))}
         </ul>
+
+        <div className="rounded-[2rem] bg-[#f7efe4] p-8 shadow-[0_20px_55px_rgba(109,75,54,0.08)]">
+          <div className="max-w-3xl">
+            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#8c6a52]">
+              Community
+            </p>
+            <h2 className="mt-4 text-3xl text-[#684835] [font-family:Georgia,'Times_New_Roman',serif] sm:text-4xl">
+              Upcoming gatherings and learning spaces.
+            </h2>
+          </div>
+          <div className="mt-8 grid gap-6 lg:grid-cols-3">
+            {communityEvents.map((event) => (
+              <article
+                key={event.id}
+                className="rounded-[1.5rem] bg-[#fffaf5] p-6 shadow-[0_14px_35px_rgba(109,75,54,0.08)]"
+              >
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#8c6a52]">
+                  {new Date(event.date).toLocaleDateString(undefined, {
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </p>
+                <h3 className="mt-3 text-2xl text-[#6d4b36] [font-family:Georgia,'Times_New_Roman',serif]">
+                  {event.title}
+                </h3>
+                <p className="mt-3 text-base leading-7 text-[#57453a]">
+                  {event.description}
+                </p>
+              </article>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );

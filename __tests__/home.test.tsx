@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import Home from '../src/app/page';
 
 describe('Home page', () => {
-  it('renders all primary sections and key elements', () => {
+  it('renders the streamlined conversion-first homepage', () => {
     render(<Home />);
 
     expect(
@@ -16,41 +16,30 @@ describe('Home page', () => {
 
     expect(
       screen.getByRole('heading', {
-        name: /support that feels informed, grounded, and personal/i,
+        name: /support that feels steady, personal, and deeply informed/i,
       })
     ).toBeVisible();
 
     expect(
       screen.getByRole('heading', {
-        name: /practical offerings designed to bring steadiness to your journey/i,
+        name: /take a quick quiz to see what kind of support would help most/i,
       })
-    ).toBeVisible();
-    expect(screen.getByRole('heading', { name: /birth doula support/i })).toBeVisible();
-    expect(screen.getByRole('heading', { name: /postpartum guidance/i })).toBeVisible();
-    expect(screen.getByRole('heading', { name: /childbirth education/i })).toBeVisible();
-    expect(screen.getByRole('heading', { name: /bereavement care/i })).toBeVisible();
-
-    expect(
-      screen.getByRole('heading', {
-        name: /gather, learn, and prepare in a warm community setting/i,
-      })
-    ).toBeVisible();
-    expect(
-      screen.getByRole('heading', { name: /comfort measures workshop/i })
-    ).toBeVisible();
-    expect(screen.getByRole('heading', { name: /birth planning circle/i })).toBeVisible();
-    expect(
-      screen.getByRole('heading', { name: /postpartum preparation chat/i })
     ).toBeVisible();
 
     const consultationLinks = screen.getAllByRole('link', {
       name: /book a consultation/i,
     });
-    expect(consultationLinks).toHaveLength(2);
+    expect(consultationLinks).toHaveLength(4);
     consultationLinks.forEach((link) => expect(link).toBeVisible());
+
     expect(
-      screen.getByRole('link', { name: /explore services/i })
+      screen.getAllByRole('link', { name: /build your birth plan/i }).length
+    ).toBeGreaterThan(0);
+    expect(
+      screen.getByRole('link', { name: /take the quiz/i })
     ).toBeVisible();
-    expect(screen.getByRole('link', { name: /view resources/i })).toBeVisible();
+    expect(
+      screen.getByRole('link', { name: /view pregnancy timeline/i })
+    ).toBeVisible();
   });
 });

@@ -1,58 +1,24 @@
 import Image from "next/image";
 import Link from "next/link";
-import { PregnancyTimelineTool } from "@/components/pregnancy-timeline/PregnancyTimelineTool";
-import { DoulaQuiz } from "@/components/quiz/DoulaQuiz";
 import { getTestimonialsForPlacement } from "@/content/testimonials";
-import { TestimonialsSection } from "@/components/testimonials/testimonials-section";
-
-const services = [
-  {
-    title: "Birth Doula Support",
-    description:
-      "Steady emotional, physical, and informational support from pregnancy through labor and birth.",
-  },
-  {
-    title: "Postpartum Guidance",
-    description:
-      "A calm check-in space for recovery, newborn transitions, and early family adjustment.",
-  },
-  {
-    title: "Childbirth Education",
-    description:
-      "Private, practical classes designed to help you make informed decisions with confidence.",
-  },
-  {
-    title: "Bereavement Care",
-    description:
-      "Compassionate support for families experiencing pregnancy loss, offered free of charge.",
-  },
-];
-
-const events = [
-  {
-    title: "Comfort Measures Workshop",
-    date: "April 12",
-    description:
-      "An evening session on breathing, positioning, and partner support tools for labor.",
-  },
-  {
-    title: "Birth Planning Circle",
-    date: "April 26",
-    description:
-      "A small-group conversation focused on preferences, advocacy, and creating a peaceful plan.",
-  },
-  {
-    title: "Postpartum Preparation Chat",
-    date: "May 10",
-    description:
-      "Guidance on recovery rhythms, feeding support, and building a gentle support system at home.",
-  },
-];
+import { ReviewSchemaScript } from "@/components/testimonials/review-schema-script";
 
 const homepageTestimonials = getTestimonialsForPlacement("homepage", {
   featuredOnly: true,
-  limit: 4,
+  limit: 3,
 });
+
+const trustPoints = [
+  "Certified birth and VBAC doula support rooted in calm advocacy",
+  "Thoughtful guidance for pregnancy, labor, birth, and early postpartum",
+  "Tools and planning support that help families feel prepared without pressure",
+];
+
+const quizHighlights = [
+  "A calm first step when you want clarity without pressure.",
+  "A simple way to understand whether planning or conversation would help most.",
+  "A gentle bridge toward booking, your birth plan, or both.",
+];
 
 export default function Home() {
   return (
@@ -75,14 +41,14 @@ export default function Home() {
               <p className="mt-4 text-sm font-semibold uppercase tracking-[0.24em] text-[#8c6a52]">
                 Gentle support for every season of birth
               </p>
-              <h1 className="mt-5 max-w-xl text-4xl leading-tight text-[#684835] [font-family:Georgia,'Times_New_Roman',serif] sm:text-5xl lg:text-6xl">
+              <h1 className="mt-5 max-w-3xl text-4xl leading-tight text-[#684835] [font-family:Georgia,'Times_New_Roman',serif] sm:text-5xl lg:text-6xl">
                 Calm care, clear guidance, and a peaceful presence for your
                 growing family.
               </h1>
               <p className="mt-6 max-w-2xl text-lg leading-8 text-[#57453a]">
-                The Missing Peace offers doula care rooted in warmth, advocacy,
-                and steady reassurance so you can move through pregnancy, birth,
-                and postpartum with confidence.
+                The Missing Peace offers warm, grounded doula support so you can
+                move through pregnancy and birth feeling informed, reassured, and
+                well supported.
               </p>
               <div className="mt-8 flex flex-col gap-4 sm:flex-row">
                 <Link
@@ -118,103 +84,150 @@ export default function Home() {
       </section>
 
       <section className="px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
-        <div className="mx-auto grid w-full max-w-6xl gap-8 rounded-[2rem] bg-[#fffaf5] p-8 shadow-[0_20px_55px_rgba(109,75,54,0.08)] lg:grid-cols-[0.9fr_1.1fr] lg:p-10">
+        <div className="mx-auto grid w-full max-w-6xl gap-10 rounded-[2rem] bg-[#fffaf5] p-8 shadow-[0_20px_55px_rgba(109,75,54,0.08)] lg:grid-cols-[0.88fr_1.12fr] lg:p-12">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#8c6a52]">
-              Meet Your Doula
+              Why families choose this support
             </p>
             <h2 className="mt-4 text-3xl text-[#684835] [font-family:Georgia,'Times_New_Roman',serif] sm:text-4xl">
-              Support that feels informed, grounded, and personal.
+              Support that feels steady, personal, and deeply informed.
             </h2>
           </div>
-          <p className="text-lg leading-8 text-[#57453a]">
-            As a certified doula, I offer compassionate care that centers your
-            choices and your peace. My approach combines practical preparation,
-            calm advocacy, and wholehearted presence so you feel heard,
-            equipped, and supported from the first planning conversation to the
-            earliest days of recovery.
-          </p>
-        </div>
-      </section>
-
-      <PregnancyTimelineTool />
-
-      <DoulaQuiz />
-
-      <TestimonialsSection
-        testimonials={homepageTestimonials}
-        ctaHref="/contact"
-        ctaLabel="Schedule a Consultation"
-        includeSchema
-      />
-
-      <section className="px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
-        <div className="mx-auto max-w-6xl">
           <div className="max-w-3xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#8c6a52]">
-              Services
+            <p className="text-lg leading-8 text-[#57453a]">
+              This support is designed to bring clarity without overwhelm,
+              helping families feel more grounded in their choices, more
+              prepared for labor, and more cared for through every shift in the
+              plan.
             </p>
-            <h2 className="mt-4 text-3xl text-[#684835] [font-family:Georgia,'Times_New_Roman',serif] sm:text-4xl">
-              Practical offerings designed to bring steadiness to your journey.
-            </h2>
-          </div>
-
-          <div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-            {services.map((service) => (
-              <article
-                key={service.title}
-                className="rounded-[1.75rem] border border-[#e2d5c7] bg-[#fffdfa] p-6 shadow-[0_18px_45px_rgba(109,75,54,0.08)]"
+            <ul className="mt-8 divide-y divide-[#eadbcf] border-y border-[#eadbcf]">
+              {trustPoints.map((point) => (
+                <li
+                  key={point}
+                  className="py-4 text-base leading-7 text-[#5d4a3e]"
+                >
+                  {point}
+                </li>
+              ))}
+            </ul>
+            <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+              <Link
+                href="/consultation"
+                className="inline-flex items-center justify-center rounded-full bg-[#7d5c3c] px-6 py-3 text-base font-semibold text-[#fffaf5] transition hover:bg-[#694a30]"
               >
-                <h3 className="text-2xl text-[#6d4b36] [font-family:Georgia,'Times_New_Roman',serif]">
-                  {service.title}
-                </h3>
-                <p className="mt-3 text-base leading-7 text-[#57453a]">
-                  {service.description}
-                </p>
-              </article>
-            ))}
+                Book a Consultation
+              </Link>
+              <Link
+                href="/birth-plan-builder"
+                className="inline-flex items-center justify-center rounded-full border border-[#d7c3b0] bg-transparent px-6 py-3 text-base font-semibold text-[#6a4a36] transition hover:bg-[#f7ecdf]"
+              >
+                Build Your Birth Plan
+              </Link>
+              <Link
+                href="/about"
+                className="text-sm font-medium text-[#7b624f] underline decoration-[#ccb39b] underline-offset-4 transition hover:text-[#5c4130]"
+              >
+                Meet Your Doula
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
       <section className="px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
-        <div className="mx-auto max-w-6xl rounded-[2rem] bg-[#f7efe4] p-8 shadow-[0_20px_55px_rgba(109,75,54,0.08)] lg:p-10">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div className="max-w-3xl">
-              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#8c6a52]">
-                Upcoming Events
-              </p>
-              <h2 className="mt-4 text-3xl text-[#684835] [font-family:Georgia,'Times_New_Roman',serif] sm:text-4xl">
-                Gather, learn, and prepare in a warm community setting.
-              </h2>
-            </div>
-            <Link
-              href="/blog"
-              className="inline-flex items-center justify-center rounded-full border border-[#cdb6a2] bg-[#fffaf5] px-5 py-3 text-base font-semibold text-[#5c4130] transition hover:bg-white"
-            >
-              View Resources
-            </Link>
+        <div className="mx-auto grid max-w-6xl gap-10 rounded-[2rem] bg-[#f7efe4] p-8 shadow-[0_20px_55px_rgba(109,75,54,0.08)] lg:grid-cols-[0.9fr_1.1fr] lg:p-12">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#8c6a52]">
+              Not sure where to start?
+            </p>
+            <h2 className="mt-4 text-3xl text-[#684835] [font-family:Georgia,'Times_New_Roman',serif] sm:text-4xl">
+              Take a quick quiz to see what kind of support would help most.
+            </h2>
+            <p className="mt-4 text-lg leading-8 text-[#57453a]">
+              If you are still deciding what kind of guidance would feel most
+              helpful, this short check-in offers a calm next step without
+              adding pressure.
+            </p>
           </div>
-
-          <div className="mt-8 grid gap-6 lg:grid-cols-3">
-            {events.map((event) => (
-              <article
-                key={event.title}
-                className="rounded-[1.5rem] bg-[#fffaf5] p-6 shadow-[0_14px_35px_rgba(109,75,54,0.08)]"
+          <div className="max-w-3xl">
+            <ul className="mt-1 divide-y divide-[#e2d5c7] border-y border-[#e2d5c7]">
+              {quizHighlights.map((point) => (
+                <li
+                  key={point}
+                  className="py-4 text-base leading-7 text-[#5d4a3e]"
+                >
+                  {point}
+                </li>
+              ))}
+            </ul>
+            <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+              <Link
+                href="/quiz"
+                className="inline-flex items-center justify-center rounded-full bg-[#7d5c3c] px-6 py-3 text-base font-semibold text-[#fffaf5] transition hover:bg-[#694a30]"
               >
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#8c6a52]">
-                  {event.date}
-                </p>
-                <h3 className="mt-3 text-2xl text-[#6d4b36] [font-family:Georgia,'Times_New_Roman',serif]">
-                  {event.title}
-                </h3>
-                <p className="mt-3 text-base leading-7 text-[#57453a]">
-                  {event.description}
-                </p>
-              </article>
-            ))}
+                Take the Quiz
+              </Link>
+              <Link
+                href="/pregnancy-timeline"
+                className="text-sm font-medium text-[#7b624f] underline decoration-[#ccb39b] underline-offset-4 transition hover:text-[#5c4130]"
+              >
+                View Pregnancy Timeline
+              </Link>
+            </div>
           </div>
         </div>
+      </section>
+
+      <section className="px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+        <section
+          className="mx-auto max-w-6xl border-t border-[#eadbcf] pt-10 lg:pt-12"
+          aria-labelledby="homepage-trust-heading"
+        >
+          <ReviewSchemaScript testimonials={homepageTestimonials} />
+          <div className="grid gap-10 lg:grid-cols-[0.88fr_1.12fr]">
+            <div className="max-w-xl">
+              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#8c6a52]">
+                What families carried with them
+              </p>
+              <h2
+                id="homepage-trust-heading"
+                className="mt-4 text-3xl text-[#684835] [font-family:Georgia,'Times_New_Roman',serif] sm:text-4xl"
+              >
+                Reassurance, advocacy, and steadiness when it mattered most.
+              </h2>
+              <p className="mt-4 text-lg leading-8 text-[#57453a]">
+                For families still deciding what kind of support they need, this
+                is often the clearest picture of what the experience actually
+                felt like.
+              </p>
+              <Link
+                href="/consultation"
+                className="mt-8 inline-flex items-center text-sm font-medium text-[#7b624f] underline decoration-[#ccb39b] underline-offset-4 transition hover:text-[#5c4130]"
+              >
+                Book a Consultation
+              </Link>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-3">
+              {homepageTestimonials.map((testimonial) => (
+                <article
+                  key={testimonial.id}
+                  className="border-t border-[#e2d5c7] pt-5"
+                >
+                  <p className="text-sm tracking-[0.16em] text-[#d5a54a]">
+                    {"★".repeat(testimonial.starRating)}
+                  </p>
+                  <blockquote className="mt-4 text-base leading-7 text-[#57453a]">
+                    <p>&ldquo;{testimonial.quote}&rdquo;</p>
+                  </blockquote>
+                  <p className="mt-4 text-sm font-semibold text-[#6d4b36]">
+                    {testimonial.reviewerName}
+                  </p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
       </section>
 
       <section className="px-4 pb-16 pt-10 sm:px-6 lg:px-8 lg:pb-20">
@@ -224,16 +237,24 @@ export default function Home() {
               Ready to begin?
             </p>
             <h2 className="mt-4 text-3xl [font-family:Georgia,'Times_New_Roman',serif] sm:text-4xl">
-              Book a consultation and create a support plan that fits your
-              family.
+              Book a consultation or start building a plan that helps you feel
+              more grounded before birth.
             </h2>
           </div>
-          <Link
-            href="/consultation"
-            className="inline-flex items-center justify-center rounded-full bg-[#fff8f0] px-6 py-3 text-base font-semibold text-[#5e4130] transition hover:bg-[#f6eadc]"
-          >
-            Book a Consultation
-          </Link>
+          <div className="flex flex-col gap-4 sm:flex-row">
+            <Link
+              href="/consultation"
+              className="inline-flex items-center justify-center rounded-full bg-[#fff8f0] px-6 py-3 text-base font-semibold text-[#5e4130] transition hover:bg-[#f6eadc]"
+            >
+              Book a Consultation
+            </Link>
+            <Link
+              href="/birth-plan-builder"
+              className="inline-flex items-center justify-center rounded-full border border-[#d9c0ad] bg-[rgba(255,248,240,0.08)] px-6 py-3 text-base font-semibold text-[#fff7ef] transition hover:bg-[rgba(255,248,240,0.14)]"
+            >
+              Build Your Birth Plan
+            </Link>
+          </div>
         </div>
       </section>
     </div>

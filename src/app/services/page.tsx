@@ -52,7 +52,7 @@ export default function ServicesPage() {
           testimonials={pricingTestimonials}
           headingId="services-testimonials-heading"
           includeSchema
-          ctaHref="/contact"
+          ctaHref="/consultation"
           ctaLabel="Ask About Packages"
         />
 
@@ -82,7 +82,7 @@ export default function ServicesPage() {
               </h2>
             </div>
             <Link
-              href="/contact"
+              href="/consultation"
               className="inline-flex items-center justify-center rounded-full bg-[#fff8f0] px-6 py-3 text-base font-semibold text-[#5e4130] transition hover:bg-[#f6eadc]"
             >
               Book a Consultation
