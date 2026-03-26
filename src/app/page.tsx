@@ -1,5 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
+import { PregnancyTimelineTool } from "@/components/pregnancy-timeline/PregnancyTimelineTool";
+import { DoulaQuiz } from "@/components/quiz/DoulaQuiz";
+import { getTestimonialsForPlacement } from "@/content/testimonials";
 import { TestimonialsSection } from "@/components/testimonials/testimonials-section";
 
 const services = [
@@ -46,6 +49,11 @@ const events = [
   },
 ];
 
+const homepageTestimonials = getTestimonialsForPlacement("homepage", {
+  featuredOnly: true,
+  limit: 4,
+});
+
 export default function Home() {
   return (
     <div className="bg-[#fcf8f3] text-[#35271f]">
@@ -56,13 +64,13 @@ export default function Home() {
             <div className="absolute bottom-0 right-0 hidden h-40 w-40 rounded-full bg-[#f6eadc] blur-3xl sm:block" />
             <div className="relative rounded-[2rem] bg-[linear-gradient(180deg,#fffaf5_0%,#f6eee3_100%)] p-8 shadow-[0_28px_70px_rgba(109,75,54,0.12)] sm:p-10">
               <Image
-                src="/the-missing-peace-logo.svg"
+                src="/the-missing-peace-logo.webp"
                 alt="The Missing Peace Birth Doula"
                 width={420}
                 height={210}
                 priority
                 sizes="(min-width: 640px) 280px, 220px"
-                className="h-auto w-[220px] sm:w-[280px]"
+                className="mx-auto h-auto w-[220px] sm:w-[280px]"
               />
               <p className="mt-4 text-sm font-semibold uppercase tracking-[0.24em] text-[#8c6a52]">
                 Gentle support for every season of birth
@@ -78,7 +86,7 @@ export default function Home() {
               </p>
               <div className="mt-8 flex flex-col gap-4 sm:flex-row">
                 <Link
-                  href="/contact"
+                  href="/consultation"
                   className="inline-flex items-center justify-center rounded-full bg-[#7d5c3c] px-6 py-3 text-base font-semibold text-[#fffaf5] transition hover:bg-[#694a30]"
                 >
                   Book a Consultation
@@ -129,9 +137,15 @@ export default function Home() {
         </div>
       </section>
 
+      <PregnancyTimelineTool />
+
+      <DoulaQuiz />
+
       <TestimonialsSection
+        testimonials={homepageTestimonials}
         ctaHref="/contact"
         ctaLabel="Schedule a Consultation"
+        includeSchema
       />
 
       <section className="px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
@@ -215,7 +229,7 @@ export default function Home() {
             </h2>
           </div>
           <Link
-            href="/contact"
+            href="/consultation"
             className="inline-flex items-center justify-center rounded-full bg-[#fff8f0] px-6 py-3 text-base font-semibold text-[#5e4130] transition hover:bg-[#f6eadc]"
           >
             Book a Consultation

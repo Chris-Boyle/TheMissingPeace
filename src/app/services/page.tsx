@@ -1,3 +1,12 @@
+import Link from "next/link";
+import { ContextualTestimonialStrip } from "@/components/testimonials/contextual-testimonial-strip";
+import { getTestimonialsForPlacement } from "@/content/testimonials";
+
+const pricingTestimonials = getTestimonialsForPlacement("pricing", {
+  featuredOnly: true,
+  limit: 2,
+});
+
 export default function ServicesPage() {
   return (
     <section className="w-full bg-[#fcf8f3] px-4 py-16 sm:px-6 lg:px-8">
@@ -37,6 +46,16 @@ export default function ServicesPage() {
           </article>
         </div>
 
+        <ContextualTestimonialStrip
+          heading="Support that still feels steady when birth takes a turn."
+          intro="Families often hesitate at pricing because they are weighing real value. These excerpts are here to show how support, advocacy, and flexibility landed when plans changed."
+          testimonials={pricingTestimonials}
+          headingId="services-testimonials-heading"
+          includeSchema
+          ctaHref="/contact"
+          ctaLabel="Ask About Packages"
+        />
+
         <article className="rounded-[2.5rem] border border-[#d8cab9] bg-[#f7efe4] px-8 py-10 shadow-[0_20px_50px_rgba(93,62,39,0.08)] sm:px-10">
           <h2 className="font-serif text-3xl text-[#6d4b36]">
             Bereavement Support
@@ -50,6 +69,26 @@ export default function ServicesPage() {
             journey.
           </p>
         </article>
+
+        <section className="rounded-[2rem] bg-[#6d4b36] px-8 py-10 text-[#fff8f0] shadow-[0_24px_60px_rgba(73,49,35,0.22)]">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+            <div className="max-w-3xl">
+              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#ead7c4]">
+                Need help choosing?
+              </p>
+              <h2 className="mt-4 font-serif text-3xl sm:text-4xl">
+                Book a consultation and talk through the level of doula support
+                that fits your family best.
+              </h2>
+            </div>
+            <Link
+              href="/contact"
+              className="inline-flex items-center justify-center rounded-full bg-[#fff8f0] px-6 py-3 text-base font-semibold text-[#5e4130] transition hover:bg-[#f6eadc]"
+            >
+              Book a Consultation
+            </Link>
+          </div>
+        </section>
       </div>
     </section>
   );

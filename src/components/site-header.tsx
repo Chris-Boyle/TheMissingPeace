@@ -9,6 +9,7 @@ const navigationItems = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
   { href: "/services", label: "Services" },
+  { href: "/consultation", label: "Consultation" },
   {
     href: "/birth-plan-builder",
     label: "Birth Plan Builder",
@@ -40,7 +41,7 @@ export function SiteHeader() {
           aria-label="The Missing Peace home"
         >
           <Image
-            src="/the-missing-peace-logo.svg"
+            src="/the-missing-peace-logo.webp"
             alt="The Missing Peace Birth Doula"
             width={320}
             height={160}

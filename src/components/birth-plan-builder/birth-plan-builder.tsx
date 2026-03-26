@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useRef, useState } from "react";
+import { ContextualTestimonialStrip } from "@/components/testimonials/contextual-testimonial-strip";
+import { getTestimonialsForPlacement } from "@/content/testimonials";
 import {
   BirthPlanBuilderProvider,
   useBirthPlanBuilder,
@@ -31,6 +33,11 @@ const comingNextItems = [
   "Summary page",
   "Email and send workflow",
 ];
+
+const builderTestimonials = getTestimonialsForPlacement("birth-plan-builder", {
+  featuredOnly: true,
+  limit: 2,
+});
 
 function BirthPlanBuilderContent() {
   const { state, setCurrentStep } = useBirthPlanBuilder();
@@ -128,6 +135,18 @@ function BirthPlanBuilderContent() {
               yourself, review with your care team, and share with your doula.
             </p>
           </div>
+        </div>
+      </section>
+
+      <section className="px-4 py-2 sm:px-6 lg:px-8 lg:py-4">
+        <div className="mx-auto max-w-6xl">
+          <ContextualTestimonialStrip
+            heading="Families wanted preparation without pressure."
+            intro="These excerpts are placed here to reinforce how this kind of guidance helps people feel ready, supported, and able to adapt when plans shift."
+            testimonials={builderTestimonials}
+            headingId="birth-plan-builder-testimonials-heading"
+            includeSchema
+          />
         </div>
       </section>
 
