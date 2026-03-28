@@ -90,7 +90,6 @@ export function StepThreeMedicalPreferences({
       : initialMedicalPreferences
   );
   const [hasSubmitted, setHasSubmitted] = useState(false);
-  const [isSaved, setIsSaved] = useState(false);
   const firstFieldRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -98,6 +97,14 @@ export function StepThreeMedicalPreferences({
       firstFieldRef.current?.focus();
     }
   }, [isVisible]);
+
+  useEffect(() => {
+    if (!isVisible) {
+      return;
+    }
+
+    saveMedicalPreferences(values);
+  }, [isVisible, saveMedicalPreferences, values]);
 
   const painManagementError =
     hasSubmitted && values.painManagementPreferences.length === 0
@@ -128,7 +135,6 @@ export function StepThreeMedicalPreferences({
         painManagementPreferences: nextPainManagementPreferences,
       };
     });
-    setIsSaved(false);
   }
 
   function toggleCesareanPreference(value: CesareanPreference) {
@@ -142,7 +148,6 @@ export function StepThreeMedicalPreferences({
         cesareanPreferences: nextCesareanPreferences,
       };
     });
-    setIsSaved(false);
   }
 
   function handleTextChange(event: ChangeEvent<HTMLTextAreaElement>) {
@@ -152,7 +157,6 @@ export function StepThreeMedicalPreferences({
       ...previous,
       [name]: value,
     }));
-    setIsSaved(false);
   }
 
   function handleSingleChoiceChange(
@@ -167,7 +171,6 @@ export function StepThreeMedicalPreferences({
       ...previous,
       [field]: value,
     }));
-    setIsSaved(false);
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -177,16 +180,6 @@ export function StepThreeMedicalPreferences({
     if (!isReadyToContinue) {
       return;
     }
-
-    saveMedicalPreferences(values);
-    setIsSaved(true);
-
-    console.log("Birth Plan Builder Step 3", {
-      step: 3,
-      section: "Interventions & Medical Preferences",
-      medicalPreferences: values,
-      nextStep: 4,
-    });
 
     setCurrentStep(4);
   }
@@ -205,7 +198,7 @@ export function StepThreeMedicalPreferences({
         <div className="rounded-[2rem] border border-[#eadbce] bg-[linear-gradient(180deg,#fffaf5_0%,#f8efe6_100%)] p-5 shadow-[0_24px_60px_rgba(109,75,54,0.12)] sm:p-8 lg:p-10">
           <ProgressHeader
             currentStep={3}
-            totalSteps={5}
+            totalSteps={4}
             sectionLabel="Interventions & Medical Preferences"
             supportText="These are preferences, not guarantees. You can always talk through any of them with your provider."
           />
@@ -540,16 +533,9 @@ export function StepThreeMedicalPreferences({
                   disabled={!isReadyToContinue}
                   className="inline-flex items-center justify-center rounded-full bg-[#7d5c3c] px-6 py-3 text-base font-semibold text-[#fffaf5] transition hover:bg-[#694a30] disabled:cursor-not-allowed disabled:bg-[#cbb6a6] disabled:text-[#f8f1eb]"
                 >
-                  Continue
+                  Review My Summary
                 </button>
               </div>
-
-              {isSaved ? (
-                <p className="mt-4 rounded-[1.25rem] border border-[#d8cab9] bg-[#f7efe4] px-4 py-3 text-sm text-[#5d4a3e]">
-                  Step 3 is saved. The next section can build on your medical
-                  preferences and the way you want decisions handled.
-                </p>
-              ) : null}
             </form>
           </div>
         </div>

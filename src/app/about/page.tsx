@@ -1,6 +1,15 @@
+import type { Metadata } from "next";
 import Image from "next/image";
+import { buildPageMetadata } from "@/lib/seo/site";
 
 const BIO = `As a Birth and VBAC certified doula, my greatest joy is providing compassionate support to every mother I have the honor of serving. My approach is rooted in inclusivity and a deep commitment to providing the physical, emotional, and educational guidance you need. I believe in empowering you through knowledge, from foundational childbirth education to hands-on patient advocacy, so you can feel confident and prepared for labor and delivery. This work is not transactional for me; it is a heartfelt dedication to walking alongside you on this incredible path. I give each of my clients my full heart, and my greatest goal is to help you find your most peaceful and empowered birth.`;
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "About Your Doula",
+  description:
+    "Meet the doula behind The Missing Peace and learn about the calm, informed, and deeply supportive approach offered to Kansas City families.",
+  path: "/about",
+});
 
 export default function AboutPage() {
   return (

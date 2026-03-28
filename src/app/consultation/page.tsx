@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import { ConsultationBookingExperience } from "@/components/consultation-booking/consultation-booking-experience";
 import {
@@ -5,6 +6,14 @@ import {
   getConsultationTimeZone,
 } from "@/lib/consultation-booking/config";
 import { getNextBookableDate } from "@/lib/consultation-booking/time";
+import { buildPageMetadata } from "@/lib/seo/site";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "Book a Doula Consultation",
+  description:
+    "Book a consultation with The Missing Peace to talk through doula support, birth planning, and what kind of care would feel most helpful.",
+  path: "/consultation",
+});
 
 function ConsultationBookingFallback() {
   return (

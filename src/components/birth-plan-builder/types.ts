@@ -95,7 +95,6 @@ export type BirthPlanBuilderState = {
   userInfo: BirthPlanUserInfo;
   birthPreferences: BirthPreferences;
   medicalPreferences: MedicalPreferences;
-  futureAnswers: Record<string, unknown>;
 };
 
 export const initialBirthPlanUserInfo: BirthPlanUserInfo = {

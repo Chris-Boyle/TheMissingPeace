@@ -28,7 +28,7 @@ test("desktop navigation moves through primary pages", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: "About You" })
   ).toBeVisible();
-  await expect(page.getByText("Step 1 of 5")).toBeVisible();
+  await expect(page.getByText("Step 1 of 4")).toBeVisible();
 
   await page.getByRole("link", { name: "Blog" }).click();
   await expect(page).toHaveURL(/\/blog$/);
@@ -36,7 +36,9 @@ test("desktop navigation moves through primary pages", async ({ page }) => {
 
   await page.getByRole("link", { name: "Contact" }).click();
   await expect(page).toHaveURL(/\/contact$/);
-  await expect(page.getByRole("heading", { name: "Contact" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Reach out with a question." })
+  ).toBeVisible();
 });
 
 test("mobile navigation opens from the menu", async ({ page }) => {

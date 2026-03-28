@@ -1,11 +1,73 @@
+import {
+  jsonConsultationErrorResponse,
+  sanitizeConsultationError,
+} from "@/lib/consultation-booking/api";
 import { ConsultationBookingError } from "@/lib/consultation-booking/errors";
+import {
+  applyConsultationRateLimit,
+  buildConsultationRateLimitHeaders,
+  CONSULTATION_SECURITY_CONFIG,
+  getBodySizeFromRequest,
+} from "@/lib/consultation-booking/security";
 import { createConsultationBooking } from "@/lib/consultation-booking/service";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   try {
-    const payload = (await request.json()) as Record<string, unknown>;
+    const rateLimit = await applyConsultationRateLimit(request, "booking");
+
+    if (!rateLimit.allowed) {
+      return jsonConsultationErrorResponse(
+        "Too many booking attempts were made from this device. Please wait a moment and try again.",
+        429,
+        "RATE_LIMITED",
+        buildConsultationRateLimitHeaders(rateLimit.retryAfterSeconds)
+      );
+    }
+
+    let rawBody = "";
+
+    try {
+      rawBody = await request.text();
+    } catch {
+      return jsonConsultationErrorResponse(
+        "Invalid request payload.",
+        400,
+        "INVALID_JSON"
+      );
+    }
+
+    if (!rawBody.trim()) {
+      return jsonConsultationErrorResponse(
+        "Invalid request payload.",
+        400,
+        "INVALID_JSON"
+      );
+    }
+
+    const bodySize = getBodySizeFromRequest(request, rawBody);
+
+    if (bodySize > CONSULTATION_SECURITY_CONFIG.maxBodyBytes) {
+      return jsonConsultationErrorResponse(
+        "Invalid booking request.",
+        400,
+        "PAYLOAD_TOO_LARGE"
+      );
+    }
+
+    let payload: Record<string, unknown>;
+
+    try {
+      payload = JSON.parse(rawBody) as Record<string, unknown>;
+    } catch {
+      return jsonConsultationErrorResponse(
+        "Invalid request payload.",
+        400,
+        "INVALID_JSON"
+      );
+    }
+
     const result = await createConsultationBooking({
       fullName:
         typeof payload.fullName === "string" ? payload.fullName : undefined,
@@ -27,22 +89,20 @@ export async function POST(request: Request) {
     return Response.json(result, { status: 201 });
   } catch (error) {
     if (error instanceof ConsultationBookingError) {
-      return Response.json(
-        {
-          error: error.message,
-          code: error.code,
-        },
-        { status: error.status }
+      const sanitized = sanitizeConsultationError(error);
+      return jsonConsultationErrorResponse(
+        sanitized.message,
+        sanitized.status,
+        sanitized.code
       );
     }
 
-    return Response.json(
-      {
-        error:
-          "We could not complete the booking right now. Please try another time or try again shortly.",
-        code: "BOOKING_REQUEST_FAILED",
-      },
-      { status: 500 }
+    console.error("Consultation booking request failed", error);
+
+    return jsonConsultationErrorResponse(
+      "We could not complete the booking right now. Please try another time or try again shortly.",
+      500,
+      "BOOKING_REQUEST_FAILED"
     );
   }
 }

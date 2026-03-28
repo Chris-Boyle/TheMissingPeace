@@ -8,7 +8,7 @@ import {
   BirthPlanBuilderProvider,
   useBirthPlanBuilder,
 } from "./birth-plan-builder-context";
-import { StepFourPlaceholder } from "./step-four-placeholder";
+import { StepFourSummary } from "./step-four-summary";
 import { StepOneUserInfo } from "./step-one-user-info";
 import { StepThreeMedicalPreferences } from "./step-three-medical-preferences";
 import { StepTwoBirthPreferences } from "./step-two-birth-preferences";
@@ -17,21 +17,13 @@ const benefits = [
   "Clarify your birth preferences",
   "Think through options you may not have considered",
   "Get a clean summary you can save and share",
-  "Receive a copy by email when you finish",
+  "Leave with a clearer next step for support",
 ];
 
 const steps = [
   "Share a few details about yourself",
   "Answer guided questions step by step",
-  "Receive a personalized summary to review and share",
-];
-
-const comingNextItems = [
-  "Grouped question sections",
-  "Labor preferences",
-  "Support people and environment",
-  "Summary page",
-  "Email and send workflow",
+  "Review your completed summary and decide what support comes next",
 ];
 
 const builderTestimonials = getTestimonialsForPlacement("birth-plan-builder", {
@@ -131,11 +123,12 @@ function BirthPlanBuilderContent() {
               decisions that matter most before labor begins. Instead of staring
               at a blank page, you will move through clear, guided prompts that
               help you think through support, environment, interventions, and
-              postpartum wishes.
+              the way you want decisions handled during birth.
             </p>
             <p className="rounded-[1.5rem] border border-[#eadbcf] bg-[#f8efe6] px-5 py-4 text-base text-[#5e4536]">
-              When you finish, you will receive a copy you can keep for
-              yourself, review with your care team, and share with your doula.
+              When you finish, you will have a complete review screen that
+              gathers your answers in one place so you can refine them and bring
+              them into your next conversation.
             </p>
           </div>
         </div>
@@ -154,92 +147,57 @@ function BirthPlanBuilderContent() {
       </section>
 
       <div ref={stepOneRef}>
-        <StepOneUserInfo
-          isVisible={isStepOneVisible && state.currentStep === 1}
-        />
-        <StepTwoBirthPreferences
-          isVisible={isStepOneVisible && state.currentStep === 2}
-        />
-        <StepThreeMedicalPreferences
-          isVisible={isStepOneVisible && state.currentStep === 3}
-        />
-        <StepFourPlaceholder
-          isVisible={isStepOneVisible && state.currentStep === 4}
-        />
+        {isStepOneVisible && state.currentStep === 1 ? (
+          <StepOneUserInfo isVisible />
+        ) : null}
+        {isStepOneVisible && state.currentStep === 2 ? (
+          <StepTwoBirthPreferences isVisible />
+        ) : null}
+        {isStepOneVisible && state.currentStep === 3 ? (
+          <StepThreeMedicalPreferences isVisible />
+        ) : null}
+        {isStepOneVisible && state.currentStep === 4 ? (
+          <StepFourSummary isVisible />
+        ) : null}
       </div>
 
-      <section
-        id="birth-plan-builder-how-it-works"
-        className="px-4 py-10 sm:px-6 lg:px-8 lg:py-14"
-        aria-labelledby="birth-plan-builder-how-it-works-heading"
-      >
-        <div className="mx-auto max-w-6xl">
-          <div className="max-w-3xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#8c6a52]">
-              How it works
-            </p>
-            <h2
-              id="birth-plan-builder-how-it-works-heading"
-              className="mt-4 text-3xl text-[#684835] [font-family:Georgia,'Times_New_Roman',serif] sm:text-4xl"
-            >
-              A calm, guided process from first details to final summary.
-            </h2>
-          </div>
-
-          <ol className="mt-8 grid gap-6 md:grid-cols-3">
-            {steps.map((step, index) => (
-              <li
-                key={step}
-                className="rounded-[1.75rem] border border-[#e2d5c7] bg-[#fffdfa] p-6 shadow-[0_18px_45px_rgba(109,75,54,0.08)]"
-              >
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#8c6a52]">
-                  Step {index + 1}
-                </p>
-                <p className="mt-3 text-xl text-[#6d4b36] [font-family:Georgia,'Times_New_Roman',serif]">
-                  {step}
-                </p>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-
-      <section
-        id="birth-plan-builder-coming-next"
-        className="px-4 pb-16 pt-10 sm:px-6 lg:px-8 lg:pb-20"
-        aria-labelledby="birth-plan-builder-coming-next-heading"
-      >
-        <div className="mx-auto max-w-6xl rounded-[2rem] bg-[#6d4b36] p-8 text-[#fff8f0] shadow-[0_24px_60px_rgba(73,49,35,0.22)] lg:p-10">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+      {!isStepOneVisible ? (
+        <section
+          id="birth-plan-builder-how-it-works"
+          className="px-4 py-10 sm:px-6 lg:px-8 lg:py-14"
+          aria-labelledby="birth-plan-builder-how-it-works-heading"
+        >
+          <div className="mx-auto max-w-6xl">
             <div className="max-w-3xl">
-              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#ead7c4]">
-                Coming next
+              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#8c6a52]">
+                How it works
               </p>
               <h2
-                id="birth-plan-builder-coming-next-heading"
-                className="mt-4 text-3xl [font-family:Georgia,'Times_New_Roman',serif] sm:text-4xl"
+                id="birth-plan-builder-how-it-works-heading"
+                className="mt-4 text-3xl text-[#684835] [font-family:Georgia,'Times_New_Roman',serif] sm:text-4xl"
               >
-                Step 1 is live, and the rest of the guided builder is ready to
-                plug in.
+                A calm, guided process from first details to final summary.
               </h2>
             </div>
-            <div className="rounded-full border border-[#d9c0ad] bg-[rgba(255,248,240,0.12)] px-4 py-2 text-sm font-medium text-[#fff3e7]">
-              Future multi-step experience scaffold
-            </div>
-          </div>
 
-          <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-            {comingNextItems.map((item) => (
-              <div
-                key={item}
-                className="rounded-[1.5rem] border border-[rgba(255,245,236,0.18)] bg-[rgba(255,248,240,0.08)] px-5 py-5"
-              >
-                <p className="text-base font-medium text-[#fff7ef]">{item}</p>
-              </div>
-            ))}
+            <ol className="mt-8 grid gap-6 md:grid-cols-3">
+              {steps.map((step, index) => (
+                <li
+                  key={step}
+                  className="rounded-[1.75rem] border border-[#e2d5c7] bg-[#fffdfa] p-6 shadow-[0_18px_45px_rgba(109,75,54,0.08)]"
+                >
+                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#8c6a52]">
+                    Step {index + 1}
+                  </p>
+                  <p className="mt-3 text-xl text-[#6d4b36] [font-family:Georgia,'Times_New_Roman',serif]">
+                    {step}
+                  </p>
+                </li>
+              ))}
+            </ol>
           </div>
-        </div>
-      </section>
+        </section>
+      ) : null}
     </div>
   );
 }

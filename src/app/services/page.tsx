@@ -1,6 +1,15 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ContextualTestimonialStrip } from "@/components/testimonials/contextual-testimonial-strip";
 import { getTestimonialsForPlacement } from "@/content/testimonials";
+import { buildPageMetadata } from "@/lib/seo/site";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "Doula Services in Kansas City",
+  description:
+    "Explore doula support packages, childbirth education, and bereavement support from The Missing Peace in Kansas City.",
+  path: "/services",
+});
 
 const pricingTestimonials = getTestimonialsForPlacement("pricing", {
   featuredOnly: true,

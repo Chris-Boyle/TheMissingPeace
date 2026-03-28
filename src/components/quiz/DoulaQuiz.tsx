@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { saveDoulaQuizResult } from "@/lib/quiz-storage";
 import { QuizIntro } from "./QuizIntro";
 import { QuizProgress } from "./QuizProgress";
 import { QuizQuestionStep } from "./QuizQuestionStep";
@@ -252,6 +253,20 @@ export function DoulaQuiz() {
 
     return calculateResult(answers);
   }, [answers, currentStep, hasStarted]);
+
+  useEffect(() => {
+    if (!result) {
+      return;
+    }
+
+    saveDoulaQuizResult({
+      answers,
+      resultKey: result.bucket,
+      resultHeadline: result.headline,
+      resultSummary: result.explanation[0] ?? "",
+      completedAt: new Date().toISOString(),
+    });
+  }, [answers, result]);
 
   useEffect(() => {
     if (!hasStarted) {

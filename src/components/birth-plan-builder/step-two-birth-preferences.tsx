@@ -1,6 +1,12 @@
 "use client";
 
-import { useMemo, useState, type ChangeEvent, type FormEvent } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type ChangeEvent,
+  type FormEvent,
+} from "react";
 import { useBirthPlanBuilder } from "./birth-plan-builder-context";
 import { ProgressHeader } from "./progress-header";
 import {
@@ -48,9 +54,15 @@ export function StepTwoBirthPreferences({
       ? state.birthPreferences
       : initialBirthPreferences
   );
-  const [isSaved, setIsSaved] = useState(false);
-
   const isReadyToContinue = useMemo(() => hasStepTwoInput(values), [values]);
+
+  useEffect(() => {
+    if (!isVisible) {
+      return;
+    }
+
+    saveBirthPreferences(values);
+  }, [isVisible, saveBirthPreferences, values]);
 
   function toggleArrayValue(
     field: "environmentPreferences" | "comfortMeasures",
@@ -85,7 +97,6 @@ export function StepTwoBirthPreferences({
         comfortMeasures: nextComfortMeasures,
       };
     });
-    setIsSaved(false);
   }
 
   function handleTextChange(
@@ -97,7 +108,6 @@ export function StepTwoBirthPreferences({
       ...previous,
       [name]: value,
     }));
-    setIsSaved(false);
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -106,16 +116,6 @@ export function StepTwoBirthPreferences({
     if (!isReadyToContinue) {
       return;
     }
-
-    saveBirthPreferences(values);
-    setIsSaved(true);
-
-    console.log("Birth Plan Builder Step 2", {
-      step: 2,
-      section: "Birth Preferences",
-      birthPreferences: values,
-      nextStep: 3,
-    });
 
     setCurrentStep(3);
   }
@@ -134,7 +134,7 @@ export function StepTwoBirthPreferences({
         <div className="rounded-[2rem] border border-[#eadbce] bg-[linear-gradient(180deg,#fffaf5_0%,#f8efe6_100%)] p-5 shadow-[0_24px_60px_rgba(109,75,54,0.12)] sm:p-8 lg:p-10">
           <ProgressHeader
             currentStep={2}
-            totalSteps={5}
+            totalSteps={4}
             sectionLabel="Birth Preferences"
           />
 
@@ -304,12 +304,6 @@ export function StepTwoBirthPreferences({
                 </button>
               </div>
 
-              {isSaved ? (
-                <p className="mt-4 rounded-[1.25rem] border border-[#d8cab9] bg-[#f7efe4] px-4 py-3 text-sm text-[#5d4a3e]">
-                  Step 2 is saved. The next section can build on these
-                  preferences for labor, environment, and support.
-                </p>
-              ) : null}
             </form>
           </div>
         </div>

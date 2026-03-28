@@ -3,6 +3,18 @@ import { expect, test } from "@playwright/test";
 test("contact form validates required fields and submits successfully", async ({
   page,
 }) => {
+  await page.route("**/api/contact", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        success: true,
+        message:
+          "Thanks for reaching out. We received your message and sent a confirmation to your email.",
+      }),
+    });
+  });
+
   await page.goto("/contact");
 
   await page.getByRole("button", { name: /send message/i }).click();
@@ -26,6 +38,8 @@ test("contact form validates required fields and submits successfully", async ({
   await page.getByRole("button", { name: /send message/i }).click();
 
   await expect(
-    page.getByText(/thank you! your message has been received/i)
+    page.getByText(
+      /thanks for reaching out\. we received your message and sent a confirmation to your email\./i
+    )
   ).toBeVisible();
 });

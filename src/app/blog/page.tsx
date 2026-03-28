@@ -1,3 +1,13 @@
+import type { Metadata } from "next";
+import { buildPageMetadata } from "@/lib/seo/site";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "Birth Resources and Community",
+  description:
+    "Read practical birth and postpartum resources and see community offerings from The Missing Peace.",
+  path: "/blog",
+});
+
 type BlogPost = {
   id: string;
   title: string;

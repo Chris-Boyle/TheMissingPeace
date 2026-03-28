@@ -1,7 +1,16 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { getTestimonialsForPlacement } from "@/content/testimonials";
 import { ReviewSchemaScript } from "@/components/testimonials/review-schema-script";
+import { buildPageMetadata } from "@/lib/seo/site";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "Kansas City Birth Doula Support",
+  description:
+    "The Missing Peace offers calm, grounded doula support in Kansas City with consultation booking, birth planning tools, and thoughtful preparation for birth.",
+  path: "/",
+});
 
 const homepageTestimonials = getTestimonialsForPlacement("homepage", {
   featuredOnly: true,
@@ -33,7 +42,6 @@ export default function Home() {
                 alt="The Missing Peace Birth Doula"
                 width={420}
                 height={210}
-                priority
                 sizes="(min-width: 640px) 280px, 220px"
                 className="mx-auto h-auto w-[220px] sm:w-[280px]"
               />

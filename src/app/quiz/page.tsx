@@ -1,5 +1,14 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { DoulaQuiz } from "@/components/quiz/DoulaQuiz";
+import { buildPageMetadata } from "@/lib/seo/site";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "Doula Support Quiz",
+  description:
+    "Take a quick doula support quiz to understand what kind of reassurance, education, and guidance could feel most helpful right now.",
+  path: "/quiz",
+});
 
 export default function QuizPage() {
   return (

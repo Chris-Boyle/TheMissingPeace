@@ -26,10 +26,3 @@ export function getConsultationTimeZone() {
 export function getConsultationCalendarId() {
   return process.env.GOOGLE_CALENDAR_ID || "primary";
 }
-
-export function getConsultationDatabasePath() {
-  return (
-    process.env.CONSULTATION_DB_PATH ||
-    `${process.cwd()}/data/consultation-bookings.sqlite`
-  );
-}

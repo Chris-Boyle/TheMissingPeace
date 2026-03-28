@@ -31,7 +31,7 @@ const birthLocationOptions = [
 ] as const;
 
 const helperText: Partial<Record<keyof BirthPlanUserInfo, string>> = {
-  email: "We will use this to send your finished birth plan when the builder is complete.",
+  email: "We will use this to personalize your summary and follow-up support if you choose to connect.",
   dueDate: "Your due date helps us shape the timeline and language in later steps.",
   careProvider: "If you know your provider already, add them here. You can always update this later.",
   supportPersonName:
@@ -59,11 +59,11 @@ function validateField(
 
   if (field === "email") {
     if (!value.trim()) {
-      return "Please enter your email so we can send your birth plan.";
+      return "Please enter your email so we can personalize your summary.";
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-      return "Please enter a valid email so we can send your birth plan.";
+      return "Please enter a valid email so we can personalize your summary.";
     }
   }
 
@@ -108,7 +108,6 @@ export function StepOneUserInfo({ isVisible }: StepOneUserInfoProps) {
   );
   const [touched, setTouched] = useState<TouchedState>(createTouchedState);
   const [hasSubmitted, setHasSubmitted] = useState(false);
-  const [isSaved, setIsSaved] = useState(false);
   const firstInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -124,18 +123,18 @@ export function StepOneUserInfo({ isVisible }: StepOneUserInfoProps) {
     event: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) {
     const { name, value } = event.target;
-
-    setValues((previous) => ({
-      ...previous,
+    const nextValues = {
+      ...values,
       [name]: value,
-    }));
+    };
+
+    setValues(nextValues);
+    saveUserInfo(nextValues);
 
     setTouched((previous) => ({
       ...previous,
       [name]: true,
     }));
-
-    setIsSaved(false);
   }
 
   function handleBlur(event: FocusEvent<HTMLInputElement | HTMLSelectElement>) {
@@ -155,16 +154,6 @@ export function StepOneUserInfo({ isVisible }: StepOneUserInfoProps) {
       return;
     }
 
-    saveUserInfo(values);
-    setIsSaved(true);
-
-    console.log("Birth Plan Builder Step 1", {
-      step: 1,
-      section: "About You",
-      userInfo: values,
-      nextStep: 2,
-    });
-
     setCurrentStep(2);
   }
 
@@ -182,7 +171,7 @@ export function StepOneUserInfo({ isVisible }: StepOneUserInfoProps) {
         <div className="rounded-[2rem] border border-[#eadbce] bg-[linear-gradient(180deg,#fffaf5_0%,#f8efe6_100%)] p-5 shadow-[0_24px_60px_rgba(109,75,54,0.12)] sm:p-8 lg:p-10">
           <ProgressHeader
             currentStep={1}
-            totalSteps={5}
+            totalSteps={4}
             sectionLabel="About You"
           />
 
@@ -203,8 +192,8 @@ export function StepOneUserInfo({ isVisible }: StepOneUserInfoProps) {
                 anything changes.
               </p>
               <div className="rounded-[1.5rem] border border-[#eadbcf] bg-[#fffdfa] px-5 py-4 text-sm leading-7 text-[#5d4a3e]">
-                We will use your email to deliver the final summary once the
-                builder is complete.
+                Your answers will shape the final review screen at the end of
+                the builder.
               </div>
             </div>
 
@@ -423,12 +412,6 @@ export function StepOneUserInfo({ isVisible }: StepOneUserInfoProps) {
                 </button>
               </div>
 
-              {isSaved ? (
-                <p className="mt-4 rounded-[1.25rem] border border-[#d8cab9] bg-[#f7efe4] px-4 py-3 text-sm text-[#5d4a3e]">
-                  Your information is saved. Next, this flow will move into your
-                  birth preferences and support choices.
-                </p>
-              ) : null}
             </form>
           </div>
         </div>

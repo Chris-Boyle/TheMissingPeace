@@ -1,17 +1,16 @@
-import { mkdirSync } from "node:fs";
-import { dirname } from "node:path";
 import { randomUUID } from "node:crypto";
-import { DatabaseSync } from "node:sqlite";
-import {
-  CONSULTATION_STATUSES,
-  getConsultationDatabasePath,
-} from "./config";
+import { CONSULTATION_STATUSES } from "./config";
 import { ConsultationBookingError } from "./errors";
+import { getDateStringForInstant } from "./time";
 import type {
   BusyInterval,
   ConsultationBookingInput,
   ConsultationBookingRecord,
 } from "./types";
+import {
+  executeRedisCommand,
+  executeRedisPipeline,
+} from "@/lib/upstash-redis";
 
 type PendingBookingInput = ConsultationBookingInput & {
   consultationType: string;
@@ -19,77 +18,104 @@ type PendingBookingInput = ConsultationBookingInput & {
   timezone: string;
 };
 
-let database: DatabaseSync | null = null;
+const PENDING_SLOT_TTL_MS = 15 * 60 * 1000;
+const BOOKING_KEY_PREFIX = "consultation:booking";
+const SLOT_KEY_PREFIX = "consultation:slot";
+const DAY_KEY_PREFIX = "consultation:day";
 
-function getDatabase() {
-  if (database) {
-    return database;
-  }
-
-  const databasePath = getConsultationDatabasePath();
-  mkdirSync(dirname(databasePath), { recursive: true });
-  database = new DatabaseSync(databasePath);
-  database.exec(`
-    CREATE TABLE IF NOT EXISTS consultation_bookings (
-      id TEXT PRIMARY KEY,
-      fullName TEXT NOT NULL,
-      email TEXT NOT NULL,
-      phone TEXT,
-      consultationType TEXT,
-      notes TEXT,
-      birthPlanSubmissionId TEXT,
-      googleCalendarEventId TEXT,
-      startTime TEXT NOT NULL,
-      endTime TEXT NOT NULL,
-      timezone TEXT NOT NULL,
-      status TEXT NOT NULL,
-      createdAt TEXT NOT NULL,
-      updatedAt TEXT NOT NULL
-    );
-
-    CREATE UNIQUE INDEX IF NOT EXISTS consultation_bookings_active_slot_idx
-    ON consultation_bookings(startTime, endTime)
-    WHERE status IN ('pending', 'confirmed');
-  `);
-
-  return database;
+function getBookingKey(id: string) {
+  return `${BOOKING_KEY_PREFIX}:${id}`;
 }
 
-function mapBookingRow(row: ConsultationBookingRecord) {
-  return row;
+function getSlotKey(startTime: string) {
+  return `${SLOT_KEY_PREFIX}:${startTime}`;
+}
+
+function getDayKey(date: string) {
+  return `${DAY_KEY_PREFIX}:${date}`;
+}
+
+function getBookingDate(startTime: string, timeZone: string) {
+  return getDateStringForInstant(new Date(startTime), timeZone);
+}
+
+function parseBookingRecord(value: unknown) {
+  if (typeof value !== "string") {
+    return null;
+  }
+
+  try {
+    return JSON.parse(value) as ConsultationBookingRecord;
+  } catch {
+    return null;
+  }
+}
+
+async function getBookingRecord(id: string) {
+  const payload = await executeRedisCommand<string | null>("GET", getBookingKey(id));
+  return parseBookingRecord(payload);
+}
+
+async function cleanupPendingWrite(booking: ConsultationBookingRecord) {
+  const date = getBookingDate(booking.startTime, booking.timezone);
+
+  await executeRedisPipeline([
+    ["DEL", getSlotKey(booking.startTime)],
+    ["DEL", getBookingKey(booking.id)],
+    ["SREM", getDayKey(date), booking.id],
+  ]);
 }
 
 export interface ConsultationBookingRepository {
-  getBusyIntervals(startTime: string, endTime: string): BusyInterval[];
-  createPendingBooking(input: PendingBookingInput): ConsultationBookingRecord;
-  confirmBooking(id: string, googleCalendarEventId: string): ConsultationBookingRecord;
-  markFailed(id: string): void;
+  getBusyIntervals(
+    startTime: string,
+    endTime: string,
+    timeZone: string
+  ): Promise<BusyInterval[]>;
+  createPendingBooking(
+    input: PendingBookingInput
+  ): Promise<ConsultationBookingRecord>;
+  confirmBooking(
+    id: string,
+    googleCalendarEventId: string
+  ): Promise<ConsultationBookingRecord>;
+  markFailed(id: string): Promise<void>;
 }
 
-export class SqliteConsultationBookingRepository
+export class UpstashConsultationBookingRepository
   implements ConsultationBookingRepository
 {
-  getBusyIntervals(startTime: string, endTime: string) {
-    const rows = getDatabase()
-      .prepare(
-        `
-          SELECT startTime, endTime
-          FROM consultation_bookings
-          WHERE status IN ('pending', 'confirmed')
-            AND startTime < ?
-            AND endTime > ?
-        `
-      )
-      .all<{ startTime: string; endTime: string }>(endTime, startTime);
+  async getBusyIntervals(startTime: string, endTime: string, timeZone: string) {
+    const date = getBookingDate(startTime, timeZone);
+    const bookingIds =
+      (await executeRedisCommand<string[]>("SMEMBERS", getDayKey(date))) || [];
 
-    return rows.map((row) => ({
-      start: row.startTime,
-      end: row.endTime,
-      source: "database" as const,
-    }));
+    if (bookingIds.length === 0) {
+      return [];
+    }
+
+    const records = await executeRedisPipeline<string | null>(
+      bookingIds.map((id) => ["GET", getBookingKey(id)])
+    );
+
+    return records
+      .map(parseBookingRecord)
+      .filter(
+        (record): record is ConsultationBookingRecord =>
+          record !== null &&
+          (record.status === CONSULTATION_STATUSES.pending ||
+            record.status === CONSULTATION_STATUSES.confirmed) &&
+          record.startTime < endTime &&
+          record.endTime > startTime
+      )
+      .map((record) => ({
+        start: record.startTime,
+        end: record.endTime,
+        source: "database" as const,
+      }));
   }
 
-  createPendingBooking(input: PendingBookingInput) {
+  async createPendingBooking(input: PendingBookingInput) {
     const booking: ConsultationBookingRecord = {
       id: randomUUID(),
       fullName: input.fullName,
@@ -106,47 +132,17 @@ export class SqliteConsultationBookingRepository
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
+    const dayKey = getDayKey(getBookingDate(booking.startTime, booking.timezone));
+    const slotReservation = await executeRedisCommand<string | null>(
+      "SET",
+      getSlotKey(booking.startTime),
+      booking.id,
+      "NX",
+      "PX",
+      PENDING_SLOT_TTL_MS
+    );
 
-    try {
-      getDatabase()
-        .prepare(
-          `
-            INSERT INTO consultation_bookings (
-              id,
-              fullName,
-              email,
-              phone,
-              consultationType,
-              notes,
-              birthPlanSubmissionId,
-              googleCalendarEventId,
-              startTime,
-              endTime,
-              timezone,
-              status,
-              createdAt,
-              updatedAt
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-          `
-        )
-        .run(
-          booking.id,
-          booking.fullName,
-          booking.email,
-          booking.phone,
-          booking.consultationType,
-          booking.notes,
-          booking.birthPlanSubmissionId,
-          booking.googleCalendarEventId,
-          booking.startTime,
-          booking.endTime,
-          booking.timezone,
-          booking.status,
-          booking.createdAt,
-          booking.updatedAt
-        );
-    } catch {
+    if (slotReservation !== "OK") {
       throw new ConsultationBookingError(
         "That time was just booked. Please choose another available slot.",
         {
@@ -156,62 +152,85 @@ export class SqliteConsultationBookingRepository
       );
     }
 
+    try {
+      await executeRedisPipeline([
+        ["SET", getBookingKey(booking.id), JSON.stringify(booking)],
+        ["SADD", dayKey, booking.id],
+      ]);
+    } catch {
+      await cleanupPendingWrite(booking);
+      throw new ConsultationBookingError(
+        "We could not hold that time right now. Please try again.",
+        {
+          status: 503,
+          code: "BOOKING_PERSISTENCE_FAILED",
+        }
+      );
+    }
+
     return booking;
   }
 
-  confirmBooking(id: string, googleCalendarEventId: string) {
-    const updatedAt = new Date().toISOString();
-    getDatabase()
-      .prepare(
-        `
-          UPDATE consultation_bookings
-          SET googleCalendarEventId = ?,
-              status = ?,
-              updatedAt = ?
-          WHERE id = ?
-        `
-      )
-      .run(
-        googleCalendarEventId,
-        CONSULTATION_STATUSES.confirmed,
-        updatedAt,
-        id
+  async confirmBooking(id: string, googleCalendarEventId: string) {
+    const current = await getBookingRecord(id);
+
+    if (!current) {
+      throw new ConsultationBookingError(
+        "We could not finalize that booking right now. Please try again.",
+        {
+          status: 503,
+          code: "BOOKING_CONFIRMATION_FAILED",
+        }
       );
-
-    const row = getDatabase()
-      .prepare(
-        `
-          SELECT *
-          FROM consultation_bookings
-          WHERE id = ?
-        `
-      )
-      .get<ConsultationBookingRecord>(id);
-
-    if (!row) {
-      throw new ConsultationBookingError("Booking record not found after confirmation.", {
-        status: 500,
-        code: "BOOKING_CONFIRMATION_NOT_FOUND",
-      });
     }
 
-    return mapBookingRow(row);
+    const booking: ConsultationBookingRecord = {
+      ...current,
+      googleCalendarEventId,
+      status: CONSULTATION_STATUSES.confirmed,
+      updatedAt: new Date().toISOString(),
+    };
+
+    try {
+      await executeRedisPipeline([
+        ["SET", getBookingKey(booking.id), JSON.stringify(booking)],
+        ["PERSIST", getSlotKey(booking.startTime)],
+      ]);
+    } catch {
+      throw new ConsultationBookingError(
+        "We could not finalize that booking right now. Please try again.",
+        {
+          status: 503,
+          code: "BOOKING_CONFIRMATION_FAILED",
+        }
+      );
+    }
+
+    return booking;
   }
 
-  markFailed(id: string) {
-    getDatabase()
-      .prepare(
-        `
-          UPDATE consultation_bookings
-          SET status = ?,
-              updatedAt = ?
-          WHERE id = ?
-        `
-      )
-      .run(CONSULTATION_STATUSES.failed, new Date().toISOString(), id);
+  async markFailed(id: string) {
+    const current = await getBookingRecord(id);
+
+    if (!current) {
+      return;
+    }
+
+    const booking: ConsultationBookingRecord = {
+      ...current,
+      status: CONSULTATION_STATUSES.failed,
+      updatedAt: new Date().toISOString(),
+    };
+    const dayKey = getDayKey(getBookingDate(booking.startTime, booking.timezone));
+
+    await executeRedisPipeline([
+      ["SET", getBookingKey(booking.id), JSON.stringify(booking)],
+      ["DEL", getSlotKey(booking.startTime)],
+      ["SREM", dayKey, booking.id],
+    ]);
   }
 }
 
 export function createConsultationBookingRepository() {
-  return new SqliteConsultationBookingRepository();
+  return new UpstashConsultationBookingRepository();
 }

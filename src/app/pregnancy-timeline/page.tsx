@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PregnancyTimelineTool } from "@/components/pregnancy-timeline/PregnancyTimelineTool";
+import { buildPageMetadata } from "@/lib/seo/site";
 
-export const metadata: Metadata = {
-  title: "Your Pregnancy Timeline | The Missing Peace",
+export const metadata: Metadata = buildPageMetadata({
+  title: "Your Pregnancy Timeline",
   description:
     "Explore your pregnancy timeline, understand each trimester, and prepare for birth with supportive guidance from The Missing Peace.",
-};
+  path: "/pregnancy-timeline",
+});
 
 const trimesterSections = [
   {

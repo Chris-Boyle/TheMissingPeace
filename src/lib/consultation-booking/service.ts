@@ -11,6 +11,7 @@ import { buildSlotsFromBusinessRules, mergeBusyIntervals } from "./slots";
 import { validateAvailabilityDate, validateBookingInput } from "./validation";
 import {
   createGoogleCalendarEvent,
+  deleteGoogleCalendarEvent,
   queryGoogleCalendarBusyTimes,
 } from "@/lib/google-calendar/google-calendar";
 import type {
@@ -24,6 +25,7 @@ export type ConsultationDependencies = {
   calendarClient: {
     queryBusyTimes: typeof queryGoogleCalendarBusyTimes;
     createEvent: typeof createGoogleCalendarEvent;
+    deleteEvent: typeof deleteGoogleCalendarEvent;
   };
   now: () => Date;
   timeZone: string;
@@ -35,6 +37,7 @@ export function createConsultationDependencies(): ConsultationDependencies {
     calendarClient: {
       queryBusyTimes: queryGoogleCalendarBusyTimes,
       createEvent: createGoogleCalendarEvent,
+      deleteEvent: deleteGoogleCalendarEvent,
     },
     now: () => new Date(),
     timeZone: getConsultationTimeZone(),
@@ -64,9 +67,7 @@ export async function getAvailableConsultationSlots(
       timeMax,
       timeZone: dependencies.timeZone,
     }),
-    Promise.resolve(
-      dependencies.repository.getBusyIntervals(timeMin, timeMax)
-    ),
+    dependencies.repository.getBusyIntervals(timeMin, timeMax, dependencies.timeZone),
   ]);
 
   const slots = buildSlotsFromBusinessRules({
@@ -121,21 +122,25 @@ export async function createConsultationBooking(
       bookingInput.consultationType || CONSULTATION_CONFIG.defaultConsultationType,
   });
 
+  const resolvedPendingBooking = await pendingBooking;
+  let calendarEventId: string | null = null;
+
   try {
     const event = await dependencies.calendarClient.createEvent({
-      fullName: pendingBooking.fullName,
-      email: pendingBooking.email,
-      phone: pendingBooking.phone || undefined,
-      notes: pendingBooking.notes || undefined,
+      fullName: resolvedPendingBooking.fullName,
+      email: resolvedPendingBooking.email,
+      phone: resolvedPendingBooking.phone || undefined,
+      notes: resolvedPendingBooking.notes || undefined,
       consultationType:
-        pendingBooking.consultationType ||
+        resolvedPendingBooking.consultationType ||
         CONSULTATION_CONFIG.defaultConsultationType,
-      startTime: pendingBooking.startTime,
-      endTime: pendingBooking.endTime,
+      startTime: resolvedPendingBooking.startTime,
+      endTime: resolvedPendingBooking.endTime,
       timeZone: dependencies.timeZone,
     });
-    const booking = dependencies.repository.confirmBooking(
-      pendingBooking.id,
+    calendarEventId = event.id;
+    const booking = await dependencies.repository.confirmBooking(
+      resolvedPendingBooking.id,
       event.id
     );
 
@@ -147,7 +152,27 @@ export async function createConsultationBooking(
       ),
     };
   } catch (error) {
-    dependencies.repository.markFailed(pendingBooking.id);
+    if (calendarEventId) {
+      try {
+        await dependencies.calendarClient.deleteEvent(calendarEventId);
+      } catch (cleanupError) {
+        console.error("Consultation event cleanup failed", {
+          bookingId: resolvedPendingBooking.id,
+          eventId: calendarEventId,
+          cleanupError,
+        });
+      }
+    }
+
+    try {
+      await dependencies.repository.markFailed(resolvedPendingBooking.id);
+    } catch (repositoryError) {
+      console.error("Consultation booking cleanup failed", {
+        bookingId: resolvedPendingBooking.id,
+        repositoryError,
+      });
+    }
+
     throw error;
   }
 }

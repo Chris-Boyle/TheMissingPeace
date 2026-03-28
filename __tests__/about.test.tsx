@@ -10,6 +10,6 @@ describe('About page', () => {
         /As a Birth and VBAC certified doula, my greatest joy is providing compassionate support to every mother I have the honor of serving\./
       )
     ).toBeInTheDocument();
-    expect(screen.getByAltText(/portrait of the doula/i)).toBeInTheDocument();
+    expect(screen.getByAltText(/portrait of meagan/i)).toBeInTheDocument();
   });
 });

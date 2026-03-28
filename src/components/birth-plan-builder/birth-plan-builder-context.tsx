@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  useCallback,
   createContext,
   useContext,
   useMemo,
@@ -23,11 +24,20 @@ type BirthPlanBuilderContextValue = {
   saveBirthPreferences: (birthPreferences: BirthPreferences) => void;
   saveMedicalPreferences: (medicalPreferences: MedicalPreferences) => void;
   setCurrentStep: (step: number) => void;
+  resetBuilder: () => void;
 };
 
 const BirthPlanBuilderContext = createContext<
   BirthPlanBuilderContextValue | undefined
 >(undefined);
+
+const initialBuilderState: BirthPlanBuilderState = {
+  currentStep: 1,
+  totalSteps: 4,
+  userInfo: initialBirthPlanUserInfo,
+  birthPreferences: initialBirthPreferences,
+  medicalPreferences: initialMedicalPreferences,
+};
 
 export function BirthPlanBuilderProvider({
   children,
@@ -35,39 +45,64 @@ export function BirthPlanBuilderProvider({
   children: ReactNode;
 }) {
   const [state, setState] = useState<BirthPlanBuilderState>({
-    currentStep: 1,
-    totalSteps: 5,
-    userInfo: initialBirthPlanUserInfo,
-    birthPreferences: initialBirthPreferences,
-    medicalPreferences: initialMedicalPreferences,
-    futureAnswers: {},
+    ...initialBuilderState,
   });
+
+  const saveUserInfo = useCallback((userInfo: BirthPlanUserInfo) => {
+    setState((previous) => ({
+      ...previous,
+      userInfo,
+    }));
+  }, []);
+
+  const saveBirthPreferences = useCallback(
+    (birthPreferences: BirthPreferences) => {
+      setState((previous) => ({
+        ...previous,
+        birthPreferences,
+      }));
+    },
+    []
+  );
+
+  const saveMedicalPreferences = useCallback(
+    (medicalPreferences: MedicalPreferences) => {
+      setState((previous) => ({
+        ...previous,
+        medicalPreferences,
+      }));
+    },
+    []
+  );
+
+  const setCurrentStep = useCallback((step: number) => {
+    setState((previous) => ({
+      ...previous,
+      currentStep: step,
+    }));
+  }, []);
+
+  const resetBuilder = useCallback(() => {
+    setState(initialBuilderState);
+  }, []);
 
   const value = useMemo<BirthPlanBuilderContextValue>(
     () => ({
       state,
-      saveUserInfo: (userInfo) =>
-        setState((previous) => ({
-          ...previous,
-          userInfo,
-        })),
-      saveBirthPreferences: (birthPreferences) =>
-        setState((previous) => ({
-          ...previous,
-          birthPreferences,
-        })),
-      saveMedicalPreferences: (medicalPreferences) =>
-        setState((previous) => ({
-          ...previous,
-          medicalPreferences,
-        })),
-      setCurrentStep: (step) =>
-        setState((previous) => ({
-          ...previous,
-          currentStep: step,
-        })),
+      saveUserInfo,
+      saveBirthPreferences,
+      saveMedicalPreferences,
+      setCurrentStep,
+      resetBuilder,
     }),
-    [state]
+    [
+      resetBuilder,
+      saveBirthPreferences,
+      saveMedicalPreferences,
+      saveUserInfo,
+      setCurrentStep,
+      state,
+    ]
   );
 
   return (

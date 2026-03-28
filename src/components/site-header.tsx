@@ -30,6 +30,7 @@ function isActivePath(pathname: string, href: string) {
 export function SiteHeader() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const shouldPrioritizeLogo = pathname !== "/" && pathname !== "/about";
 
   return (
     <header className="sticky top-0 z-50 border-b border-[#dccfc1] bg-[rgba(252,248,243,0.94)] backdrop-blur">
@@ -45,6 +46,7 @@ export function SiteHeader() {
             alt="The Missing Peace Birth Doula"
             width={320}
             height={160}
+            priority={shouldPrioritizeLogo}
             sizes="(min-width: 640px) 170px, 140px"
             className="h-auto w-[140px] sm:w-[170px]"
           />

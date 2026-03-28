@@ -12,8 +12,9 @@ function getRequiredEnv(name: string) {
   const value = process.env[name];
 
   if (!value) {
+    console.error("Missing Google Calendar configuration", { name });
     throw new ConsultationBookingError(
-      `Missing required server configuration: ${name}.`,
+      "Calendar integration is not available right now.",
       { status: 500, code: "MISSING_ENV" }
     );
   }
@@ -42,9 +43,13 @@ async function getGoogleAccessToken() {
   const payload = (await response.json()) as GoogleAccessTokenResponse;
 
   if (!response.ok || !payload.access_token) {
+    console.error("Google Calendar auth failed", {
+      status: response.status,
+      error: payload.error,
+      errorDescription: payload.error_description,
+    });
     throw new ConsultationBookingError(
-      payload.error_description ||
-        "Unable to authorize the consultation calendar integration.",
+      "Calendar integration is not available right now.",
       { status: 502, code: "GOOGLE_AUTH_FAILED" }
     );
   }
@@ -68,8 +73,13 @@ async function googleCalendarFetch(
 
   if (!response.ok) {
     const errorText = await response.text();
+    console.error("Google Calendar request failed", {
+      status: response.status,
+      body: errorText,
+      input,
+    });
     throw new ConsultationBookingError(
-      `Google Calendar request failed: ${errorText}`,
+      "Calendar integration is not available right now.",
       { status: 502, code: "GOOGLE_CALENDAR_REQUEST_FAILED" }
     );
   }
@@ -150,4 +160,15 @@ export async function createGoogleCalendarEvent(params: {
   );
 
   return (await response.json()) as { id: string };
+}
+
+export async function deleteGoogleCalendarEvent(eventId: string) {
+  await googleCalendarFetch(
+    `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(
+      getConsultationCalendarId()
+    )}/events/${encodeURIComponent(eventId)}?sendUpdates=none`,
+    {
+      method: "DELETE",
+    }
+  );
 }
